@@ -9,15 +9,26 @@ class Puzzle(object):
         self.cells = []
         self.values = []
         self.regions = {}
+        self.definition = config.PUZZLE_DEF
 
-    def puzzle_create_from_data(self, data):
+    def puzzle_define_regions(self):
+        # add regions
+        for collection in self.definition['COLLECTIONS']:
+            region_def = self.definition[collection]
+
+            for r in region_def:
+                self.puzzle_add_region(collection, r)
+
+    def puzzle_create_from_data(self, data, definition=config.PUZZLE_DEF):
         index = 0
+        self.definition = definition
         self.data = data.copy()
-        self.values = config.PUZZLE_DEF["VALUES"]
-        for r in range(config.PUZZLE_DEF["NO_ROWS"]):
-            for c in range(config.PUZZLE_DEF["NO_COLS"]):
+        self.values = definition["VALUES"]
+        for r in range(definition["NO_ROWS"]):
+            for c in range(definition["NO_COLS"]):
                 self.cells.append(cell.Cell(index, data[index], data[index] != 0))
                 index += 1
+        self.puzzle_define_regions()
 
     def puzzle_add_region(self, collection, region_def):
         if collection not in self.regions:

@@ -7,23 +7,35 @@ import urllib3 as url
 from bs4 import BeautifulSoup
 import puzzle
 
+import settings
 import config
 import solve
 
-puzzle_level = 'easy'
+puzzle_level = ''
+puzzle_data = ''
+definition_file = ''
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "emh", ["easy", "med", "hard"])
+    opts, args = getopt.getopt(sys.argv[1:], "l:q:p:d:", ["level", "puzzle", "quiet", "definition"])
 
 except getopt.GetoptError:
-    print('solver.py [easy] [med] [hard]')
+    print('solver.py -level [easy | med | hard] -puzzle <puzzledata> -quiet -definition <configfile.json>')
     sys.exit(-1)
 
-for arg in args:
-    if arg == 'm' or arg == 'med' or arg == 'medium':
-        puzzle_level = 'medium'
-    elif arg == 'h' or arg == 'hard':
-        puzzle_level = 'hard'
+for opt, arg in opts:
+    if opt == '-l':
+        if arg == 'm' or arg == 'med' or arg == 'medium':
+            puzzle_level = 'medium'
+        elif arg == 'h' or arg == 'hard':
+            puzzle_level = 'hard'
+        else:
+            puzzle_level = 'easy'
+    elif opt == '-p' or opt == '--puzzle':
+        puzzle_data = arg
+    elif opt == '-q' or opt == '--quiet':
+        settings.verbosity = -1
+    elif opt == '-d' or opt == '--definition':
+        definition_file = arg
     else:
         pass
 
@@ -47,62 +59,41 @@ def pull_puzzle(level):
     return puzzle
 
 
-def verify_solved_puzzle():
-    return True
-
-def dump(data):
-    index = 0
-    str = ''
-
-    for r in range(config.PUZZLE_DEF["NO_ROWS"]):
-        for c in range(config.PUZZLE_DEF["NO_COLS"]):
-            if puzzle_data[index] != 0:
-                str += ' {} '.format(data[index])
-            else:
-                str += '   '
-            index += 1
-            if c == 2 or c == 5:
-                str += ' | '
-        print(str)
-        if r == 2 or r == 5:
-            print("-" * 33)
-        str = ''
-
-
-# pull the puzzle data from NY Times site
-puzzle_data = pull_puzzle(puzzle_level)
-
 # create the puzzle object
 pzle = puzzle.Puzzle()
-pzle.puzzle_create_from_data(puzzle_data)
+
+# pull the puzzle data from NY Times site
+if puzzle_data == '':
+    puzzle_data = pull_puzzle(puzzle_level)
+
+if settings.puzzle_definition == '':
+    settings.puzzle_definition = config.PUZZLE_DEF
+else:
+    pass
+
+# create the puzzle from the data
+pzle.puzzle_create_from_data(puzzle_data, settings.puzzle_definition)
+
 
 # for debugging
-pzle.dump()
+if settings.verbosity >= 0:
+    # print the puzzle
+    pzle.dump()
 
-# prompt user to solve
-response = input('Solve this puzzle (y/n)? ')
-if 'n' in response or 'N' in response:
-    exit(0)
+    # prompt user to solve
+    response = input('Solve this puzzle (y/n)? ')
+    if 'n' in response or 'N' in response:
+        exit(0)
 
-# add regions
-for collection in config.PUZZLE_DEF['COLLECTIONS']:
-    region_def = config.PUZZLE_DEF[collection]
-
-    for r in region_def:
-        pzle.puzzle_add_region(collection, r)
 
 # check solution for correctness
 ret = solve.solveit(pzle)
 if ret:
+    if settings.verbosity < 0:
+        pzle.dump()
     if pzle.verify():
         print('Puzzle is complete!')
     else:
         print('Error in solution!')
 
 print('Solver finished with return code {}'.format(ret))
-
-
-
-
-
-

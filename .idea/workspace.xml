@@ -7,7 +7,18 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1VGglMPoZWEiZWtDLT67tgdj2ER" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -17,7 +28,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="TEXT" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Terminal/db.py" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="ServiceViewManager">
     <option name="viewStates">
@@ -45,18 +56,22 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
+    <state x="475" y="174" key="#Notifications" timestamp="1577203330979">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="475" y="174" key="#Notifications/0.0.1920.1050/1920.0.1280.1024@0.0.1920.1050" timestamp="1577203330979" />
     <state x="740" y="279" key="FileChooserDialogImpl" timestamp="1576941601164">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="740" y="279" key="FileChooserDialogImpl/0.0.1920.1050/1920.0.1280.1024@0.0.1920.1050" timestamp="1576941601164" />
-    <state x="461" y="167" key="SettingsEditor" timestamp="1576885081404">
+    <state x="461" y="167" key="SettingsEditor" timestamp="1577203939419">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="461" y="167" key="SettingsEditor/0.0.1920.1050/1920.0.1280.1024@0.0.1920.1050" timestamp="1576885081404" />
-    <state x="655" y="348" key="com.intellij.ide.util.TipDialog" timestamp="1577039774174">
+    <state x="461" y="167" key="SettingsEditor/0.0.1920.1050/1920.0.1280.1024@0.0.1920.1050" timestamp="1577203939419" />
+    <state x="655" y="348" key="com.intellij.ide.util.TipDialog" timestamp="1577203298502">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
-    <state x="655" y="348" key="com.intellij.ide.util.TipDialog/0.0.1920.1050/1920.0.1280.1024@0.0.1920.1050" timestamp="1577039774174" />
+    <state x="655" y="348" key="com.intellij.ide.util.TipDialog/0.0.1920.1050/1920.0.1280.1024@0.0.1920.1050" timestamp="1577203298502" />
     <state x="1920" y="0" width="1277" height="813" key="dock-window-1" timestamp="1577136748394">
       <screen x="1920" y="0" width="1280" height="1024" />
     </state>

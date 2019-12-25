@@ -19,17 +19,15 @@ def set_all_candidates(pz):
     for c in pz.cells:
         removed = []
 
-        if not c.is_solved():
+        if not c.is_solved() and c.get_num_candidates() == 0:
+            print('Error in cell {}. Not solved and candidates == {}'.format(c.get_cell_name(), c.candidates))
+
+        if not c.is_solved() and c.get_num_candidates() > 1:
             # find all regions this cell belongs to
             regions = pz.get_regions_from_cell(c.pos)
-            # print('Cell {}: {}'.format(c.pos, regions))
+            # debug('Cell {}: {}'.format(c.get_cell_name(), regions))
 
             for r in regions:
-                # if we have only 1 candidate left,
-                # the cell is solved!
-                if c.get_num_candidates() == 1:
-                    break;
-
                 # print(r)
                 for pos in r:
                     cel = pz.get_cell_from_position(pos)
@@ -38,8 +36,8 @@ def set_all_candidates(pz):
                             c.remove_candidate(cel.get_value())
                             removed.append(cel.get_value())
 
-            # print("Cell {}: Removed {}".format(c.get_cell_name(), removed))
-            # print("Cell candidiates: {}".format(c.get_candidates()))
+            # debug("Cell {}: Removed {}".format(c.get_cell_name(), removed))
+            # debug("Cell candidiates: {}".format(c.get_candidates()))
 
 
 # depreciated folded into find_singles
@@ -57,11 +55,12 @@ def find_naked_singles(pzle):
 
 def find_singles(pzle):
     # find values that only appear once in a region
-    report('Looking for Naked/Hidden Singles...')
+    report('Looking for Hidden Singles...')
     dirty = False
 
     collections = pzle.regions.keys()
     for collection in collections:
+        # debug(collection)
         for region in pzle.regions[collection]:
 
             # this is the map of values --> [ cell positions ]
@@ -76,7 +75,7 @@ def find_singles(pzle):
                         map_value_to_cell_position(pos_candidates, v, cell_position)
 
             # check each value to see if a number has only 1 valid cell
-            # print(pos_candidates)
+            # debug(pos_candidates)
             for pos in pos_candidates:
                 for v, pos in pos_candidates.items():
                     if len(pos) == 1:
@@ -139,9 +138,9 @@ def find_naked_doubles(pzle):
 
                 # if regions is not an empty set (list), then we have common
                 # regions to remove doubles
-                debug('Common regions between {} and {}: {}'.format(c1.get_cell_name(),
-                                                                    c2.get_cell_name(),
-                                                                    regions))
+                # debug('Common regions between {} and {}: {}'.format(c1.get_cell_name(),
+                #                                                    c2.get_cell_name(),
+                #                                                     regions))
                 if len(regions) != 0:
                     for r in regions:
                         if remove_candidates_from_region(pzle, r, c1.candidates, [c1.pos, c2.pos]):
@@ -191,8 +190,8 @@ def find_doubles(pzle):
                                 if remove_candidates_from_region(pzle, r, values, pos1):
                                     dirty = True
                                 other_values = [val for val in pzle.get_puzzle_values() if val not in values]
-                                print('Positions: {}'.format(pos1))
-                                print('Other Values: {}'.format(other_values))
+                                # print('Positions: {}'.format(pos1))
+                                # print('Other Values: {}'.format(other_values))
                                 if remove_candidates_from_cells(pzle, other_values, pos1):
                                     dirty = True
     return dirty
@@ -204,51 +203,101 @@ def find_triples(pzle):
 
     collections = pzle.regions.keys()
     for collection in collections:
-        print(collection)
+        # debug(collection)
         for region in pzle.regions[collection]:
 
             # this is the map of values --> [ cell positions ]
             pos_candidates = {}
             for cell_position in region:
+
                 # for each cell position in our region, get
                 # the candidates and map to the position
                 cel = pzle.get_cell_from_position(cell_position)
                 if not cel.is_solved():
                     for v in cel.get_candidates():
                         map_value_to_cell_position(pos_candidates, v, cell_position)
+
             # this should contain the entire map
-            print(pos_candidates)
+            # debug(pos_candidates)
 
             # iterate through our map, pulling out the value-pos pairs
             for v, pos1 in pos_candidates.items():
                 if len(pos1) == 3:
-                    debug('value: {}, pos1: {}'.format(v, pos1))
+                    # debug('value: {}, pos1: {}'.format(v, pos1))
 
                     # find all the values that have the same candidates as this value
-                    # values = [val for val, p in pos_candidates.items() if p == pos1]
                     values = [val for val, p in pos_candidates.items() if set(p).issubset(pos1)]
-                    debug('Values: {}'.format(values))
+                    # debug('Values: {}'.format(values))
 
-                    # we should have 2 values for this length
+                    # we should have 3 values for this length
                     if len(values) == 3:
                         regions = pzle.get_common_regions_from_cells(pos1)
                         for r in regions:
                             if remove_candidates_from_region(pzle, r, values, pos1):
                                 dirty = True
                             other_values = [val for val in pzle.get_puzzle_values() if val not in values]
-                            debug('Positions: {}'.format(pos1))
-                            debug('Other Values: {}'.format(other_values))
+                            # debug('Positions: {}'.format(pos1))
+                            # debug('Other Values: {}'.format(other_values))
                             if remove_candidates_from_cells(pzle, other_values, pos1):
                                 dirty = True
+
+                # check for triples condition: | 2,5 | 5,6 | 2,6 |
+                # if len(pos1) == 2:
+                #    pass
+
+    return dirty
+
+
+def find_pointing_pairs(pzle):
+    report('Looking for Pointing Pairs...')
+    dirty = False
+
+    collections = pzle.regions.keys()
+    for collection in collections:
+        # debug(collection)
+        for region in pzle.regions[collection]:
+
+            pos_candidates = {}
+
+            # for this (row)
+            for pos in region:
+
+                cel = pzle.get_cell_from_position(pos)
+                if not cel.is_solved():
+                    for v in cel.get_candidates():
+                        map_value_to_cell_position(pos_candidates, v, pos)
+
+            # this should contain the entire map
+            # debug(pos_candidates)
+
+            for v, positions in pos_candidates.items():
+
+                # debug('Value: {}, positions: {}'.format(v, positions))
+
+                # if we have 2 or 3 values in this row, check to see
+                # if they are all in the same box...
+                if len(positions) == 2 or len(positions) == 3:
+
+                    # if we have a common region, then they must be boxes
+                    common_regions = pzle.get_common_regions_from_cells(positions)
+                    if len(common_regions) == 2:
+                        # debug(common_regions)
+                        other_region = [rgn for rgn in common_regions if rgn != region]
+                        # debug(region)
+                        # debug(other_region)
+                        if remove_candidates_from_region(pzle, other_region[0], [v], positions):
+                            dirty = True
 
     return dirty
 
 
 def solveit(pzle):
     algorithms = [
+        find_naked_singles,
         find_singles,
         find_doubles,
-        find_triples
+        find_triples,
+        find_pointing_pairs
     ]
 
     while True:
@@ -258,12 +307,15 @@ def solveit(pzle):
             if dirty:
                 if settings.verbosity > 0:
                     pzle.dump()
-                break
-            else:
-                if settings.verbosity > 0:
+                if settings.verbosity == 2:
                     resp = input('Continue (y/n)? ')
                     if 'n' in resp or 'N' in resp:
                         return -1
+                break
+            if not dirty or settings.verbosity > 0:
+                resp = input('Continue (y/n)? ')
+                if 'n' in resp or 'N' in resp:
+                    return -1
 
         if pzle.is_solved():
             return 1

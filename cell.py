@@ -1,5 +1,6 @@
 import config
 
+
 class Cell(object):
 
     def __init__(self, pos=-1, value=0, is_starter=False):

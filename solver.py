@@ -59,17 +59,39 @@ def pull_puzzle(level):
     return puzzle
 
 
+def puzzle_from_string(data, structure):
+    str = ''
+    puz = []
+
+    for c in data:
+        if c == ' ':
+            pass
+        if c not in structure.puzzle_definition['VALUES']:
+            puz.append(int(c))
+        else:
+            puz.append(0)
+
+    if len(puz) != structure.puzzle_definition['NO_ROWS'] * structure.puzzle_definition['NO_COLS']:
+        print('Error in puzzle data string.')
+        return ''
+
+    # print(puz)
+    return puz
+
 # create the puzzle object
 pzle = puzzle.Puzzle()
 
-# pull the puzzle data from NY Times site
-if puzzle_data == '':
-    puzzle_data = pull_puzzle(puzzle_level)
-
+# this is the definition of the puzzle structure
 if settings.puzzle_definition == '':
     settings.puzzle_definition = config.PUZZLE_DEF
 else:
     pass
+
+# pull the puzzle data from NY Times site
+if puzzle_data == '':
+    puzzle_data = pull_puzzle(puzzle_level)
+else:
+    puzzle_data = puzzle_from_string(puzzle_data, settings)
 
 # create the puzzle from the data
 pzle.puzzle_create_from_data(puzzle_data, settings.puzzle_definition)

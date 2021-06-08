@@ -11,7 +11,7 @@ import settings
 import config
 import solve
 
-puzzle_level = ''
+puzzle_level = 'easy'
 puzzle_data = ''
 definition_file = ''
 
@@ -50,9 +50,12 @@ def pull_puzzle(level):
 
     # print(soup.find_all("div", class_='pz-game-screen'))
     game_data = soup.find("script")
-    text = game_data.text.lstrip('window.gameData = ')
+    # text = game_data.text.lstrip('window.gameData = ')
+    text = game_data.contents[0].lstrip('window.gameData = ')
+    print("text: = " + text)
 
     jdata = json.loads(text)
+    print(jdata)
 
     puzzle = jdata[level]['puzzle_data']['puzzle']
 
@@ -78,6 +81,7 @@ def puzzle_from_string(data, structure):
     # print(puz)
     return puz
 
+
 # create the puzzle object
 pzle = puzzle.Puzzle()
 
@@ -96,7 +100,6 @@ else:
 # create the puzzle from the data
 pzle.puzzle_create_from_data(puzzle_data, settings.puzzle_definition)
 
-
 # for debugging
 if settings.verbosity >= 0:
     # print the puzzle
@@ -106,7 +109,6 @@ if settings.verbosity >= 0:
     response = input('Solve this puzzle (y/n)? ')
     if 'n' in response or 'N' in response:
         exit(0)
-
 
 # check solution for correctness
 ret = solve.solveit(pzle)

@@ -11,7 +11,7 @@ import settings
 import config
 import solve
 
-puzzle_level = 'easy'
+puzzle_level = ''
 puzzle_data = ''
 definition_file = ''
 
@@ -52,10 +52,8 @@ def pull_puzzle(level):
     game_data = soup.find("script")
     # text = game_data.text.lstrip('window.gameData = ')
     text = game_data.contents[0].lstrip('window.gameData = ')
-    print("text: = " + text)
 
     jdata = json.loads(text)
-    print(jdata)
 
     puzzle = jdata[level]['puzzle_data']['puzzle']
 
